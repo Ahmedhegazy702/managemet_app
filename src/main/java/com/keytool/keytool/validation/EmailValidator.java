@@ -12,7 +12,7 @@ import java.util.Set;
 
 @AutoService(Process.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
-@SupportedAnnotationTypes("com.keytool.keytool.validation")
+@SupportedAnnotationTypes("com.keytool.keytool.validation.EmailValidate")
 public class EmailValidator extends AbstractProcessor {
 
 
