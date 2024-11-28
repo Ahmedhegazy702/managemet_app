@@ -1,6 +1,5 @@
 package com.keytool.keytool.services;
 
-import com.keytool.keytool.entity.User;
 import com.keytool.keytool.entity.Vacation;
 import com.keytool.keytool.repository.UserRepository;
 import com.keytool.keytool.repository.VacationRepository;
@@ -31,6 +30,7 @@ public class VacationService {
     public Page<Vacation> getUserVacationRequest(String email,Pageable pageable) {
        // return vacationRepository.findByUsername(email);
         return vacationRepository.findByUsername(email,pageable);
+
     }
 
     public Page<Vacation> getAllVacationRequests(int page, int size, LocalDate startDate,LocalDate endDate) {
@@ -44,14 +44,13 @@ public class VacationService {
     }
 
     public Vacation changeRequestStatus(Long requestId, String status) {
-        Vacation vacationRequest = vacationRepository.findById(requestId).orElse(null);
+        Vacation vacationRequest = vacationRepository.findById(requestId).orElseThrow(()->new IllegalArgumentException("request Id not found"));
 
-        if (vacationRequest != null) {
-            vacationRequest.setStatus(status);
-            return vacationRepository.save(vacationRequest);
-        }
+        vacationRequest.setStatus(status);
+        return vacationRepository.save(vacationRequest);
 
-        return null;
+
+
     }
 
     public void deleteVacation(Long id){

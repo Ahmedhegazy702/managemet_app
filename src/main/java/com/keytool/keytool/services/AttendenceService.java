@@ -19,8 +19,8 @@ public class AttendenceService {
     @Autowired
     private UserRepository userRepository;
 
-    public String recordAttendenc(String uerEmail) {
-        User user = userRepository.findByEmail(uerEmail);
+    public String recordAttendenc(String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(()->new IllegalArgumentException("User not found with email: " + userEmail));
         LocalDate today = LocalDate.now();
         Optional<Attendence> exitingAttendence = attendenceRepository.findByUserAndDate(user, today);
 
@@ -29,7 +29,7 @@ public class AttendenceService {
             if (attendence.getCheckOutTime() == null) {
                 attendence.setCheckOutTime(LocalTime.now());
                 attendenceRepository.save(attendence);
-                return "checkout succssfuly for user" + uerEmail;
+                return "checkout succssfuly for user" + userEmail;
 
             } else {
                 return "User has already checked out";
@@ -43,12 +43,12 @@ public class AttendenceService {
             attendence.setCheckInTime(LocalTime.now());
 
             attendenceRepository.save(attendence);
-            return "check in record successfully for user" + uerEmail;
+            return "check in record successfully for user" + userEmail;
         }
 
     }
-    public List<Attendence>getAttendenceforEmployee(Long userID){
-        return attendenceRepository.findByUserId(userID);
+    public Attendence getAttendenceforEmployee(Long userID){
+        return attendenceRepository.findByUserId(userID).orElseThrow(()->new RuntimeException("user Id not found"));
     }
 
     public List<Attendence> getAttendanceByEmployeeAndDate(Long userId, LocalDate startDate, LocalDate endDate) {

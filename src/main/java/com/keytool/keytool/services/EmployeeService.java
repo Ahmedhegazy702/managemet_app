@@ -8,27 +8,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmployeeService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public EmployeeService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+
+    public EmployeeService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+
     }
 
 
     public User viewProfile(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("User not found with email:" + email));
     }
 
 
 
-    public User addEmployee(User employeeRequest) {
-        if (userRepository.findByEmail(employeeRequest.getEmail()) != null) {
-            throw new RuntimeException("email is already exist");
-        }
 
-        employeeRequest.setPassword(passwordEncoder.encode(employeeRequest.getPassword()));
-       return userRepository.save(employeeRequest);
-
-    }
 }

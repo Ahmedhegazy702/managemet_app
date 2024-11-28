@@ -1,11 +1,9 @@
 package com.keytool.keytool.services;
 
-import com.keytool.keytool.config.JwtUtil;
 import com.keytool.keytool.entity.User;
 import com.keytool.keytool.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,11 +53,8 @@ public class UserService implements UserDetailsService {
 
 
     public boolean login(String email, String password) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new IllegalArgumentException("user not found");
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new IllegalArgumentException("user not found"));
 
-        }
         return passwordEncoder.matches(password,user.getPassword());
     }
 
@@ -69,10 +64,8 @@ public class UserService implements UserDetailsService {
     }
 
     public String updateRole(String email, String newRole) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
+        User user = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("user not found"));
+
         if (!newRole.equals("USER") && !newRole.equals("ADMIN")) {
             throw new RuntimeException("Role is wrong");
         }
@@ -84,7 +77,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User viewProfile(String email) {
-         return userRepository.findByEmail(email);
+         return userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("user not found"));
 
     }
 
@@ -95,10 +88,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + email);
-        }
+        User user = userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("User not found with email: " + email));
+
 
 
         return new org.springframework.security.core.userdetails.User
@@ -110,6 +101,6 @@ public class UserService implements UserDetailsService {
     }
 
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("User not found with email: " + email));
     }
 }
